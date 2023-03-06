@@ -1,0 +1,179 @@
+#include <iostream>
+#include <cmath>
+#include <string>
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+using namespace std;
+
+// zone1 is the first half of the playing field. it returns the amount of touches on the table and returns
+void zone_touch1(int touch, int &touch_count1, int &location1, double &smash_speed_timer)
+{
+    if (touch != 0)
+    {
+        touch_count1++;
+        location1 = 65;
+        smash_speed_timer = 0.1;
+    }
+}
+// zone2 is the other half of the playing field.  it returns amount of touches on the table and returns coordinates
+void zone_touch2(int touch, int &touch_count2, int &location2, double &smash_speed_timer)
+{
+    if (touch != 0)
+    {
+        touch_count2++;
+        location2 = 70;
+        smash_speed_timer = 0.2;
+    }
+}
+// senses if a ball has passed over the net and x/y coordinates measured from the tabletop
+// X is counted in centimeters and begins on the westside from the net
+void net_sensor(int &ball_x, int &ball_y, bool is_detected, double &smash_speed_timer)
+{
+    if (is_detected = true)
+    {
+        // X-positioning of the ball from the net-sensor
+        ball_x = 40;
+        // Y-positioning of the ball from the net-sensor
+        ball_y = 40;
+    }
+}
+// randomzises and tells which player gets to serve first
+void who_starts()
+{
+    srand(time(NULL));
+    int starter;
+    starter = rand() % 100 + 1;
+    if (starter >= 50)
+    {
+        cout << "player 2 starts";
+        return;
+    }
+    else
+        cout << "player 1 starts";
+
+    return;
+}
+void serve(int touch_count1, int touch_count2, bool is_detected, float sensor_timer, int &player1, int &player2)
+{
+    // reset the timer on the sensor giving the player 4seconds to return the ball
+    int reset_timer = 0;
+    if (is_detected == true)
+    {
+        if (touch_count1 < touch_count2)
+        {
+            player1++;
+            cout << "player 1 has started!\n";
+            sensor_timer = reset_timer;
+            return;
+        }
+        if (touch_count2 >= touch_count1)
+        {
+            player2++;
+            cout << "player2 has started\n";
+            sensor_timer = reset_timer;
+            return;
+        }
+        else
+        {
+            cout << "error";
+        }
+    }
+}
+
+// returns the average speed of the smash(does not concider any spin on the ball).
+void smash_speed(int touch1, int touch2, int ball_x, int ball_y, int location1, int location2, int &distance, double smash_speed_timer)
+{
+    if (touch1 != 0 && location1 != 0)
+    {
+        double km_h1 = 0;
+        double km_h2 = 0;
+        // calculate the distance from when the ball passes the net to first touch
+        double flat_distance = sqrt((ball_x * ball_x + location1 * location1));
+        distance = sqrt(ball_y * ball_y + flat_distance * flat_distance);
+
+        // converts divides the total distance traveled to first ball touch in a zone with the time it took and then converts cm/s to km/h
+        km_h1 = (distance / smash_speed_timer) * 0.036;
+        if (km_h1 > 15)
+        {
+            cout << "smashed: " << km_h1 << "km/h";
+        }
+        if (touch2 != 0 && location2 != 0)
+        {
+            double km_h2;
+
+            double flat_distance = sqrt((ball_x * ball_x + location2 * location2));
+            distance = sqrt(ball_y * ball_y + flat_distance * flat_distance);
+            km_h2 = (distance / smash_speed_timer) * 0.036;
+        }
+        if (km_h2 > 15)
+        {
+            cout << "smashed: " << km_h2 << "Km/h";
+        }
+    }
+}
+int point_system(bool serve, int player1, int player2)
+{
+    if (serve == true)
+    {
+    }
+}
+// Get current date/time, format is YYYY-MM-DD.HH:mm:ss for the "digital display"
+const string currentDateTime()
+{
+    time_t now = time(0);
+    struct tm tstruct;
+    char buffer[80];
+    tstruct = *localtime(&now);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %X", &tstruct);
+    return buffer;
+}
+
+int main()
+{
+    // Distance traveled from the net
+    int location1 = 0;
+    int location2 = 0;
+
+    // hardcoding sensorplate touches
+    int touch1 = 1;
+    int touch2 = 1;
+
+    // counting sensorplate touches
+    int touch_count1 = 0;
+    int touch_count2 = 1;
+
+    int player1 = 0;
+    int player2 = 0;
+
+    bool is_detected = true;
+    float sensor_timer = 3.14159265358979323;
+
+    double smash_speed_timer = 0;
+
+    // position of the ball on the x-coordinate, counting from the net_sensor trigger
+    int ball_x = 0;
+    // position of the ball on the y-coordinate, counting from the net_sensor trigger
+    int ball_y = 0;
+    //
+    int distance = 0;
+
+    zone_touch1(touch1, touch_count1, location1, smash_speed_timer);
+    zone_touch2(touch2, touch_count2, location2, smash_speed_timer);
+
+    net_sensor(ball_x, ball_y, is_detected, smash_speed_timer);
+    serve(touch_count1, touch_count2, is_detected, sensor_timer, player1, player2);
+
+    cout << "Date/Time: " << currentDateTime() << "\n";
+    smash_speed(touch1, touch2, ball_x, ball_y, location1, location2, distance, smash_speed_timer);
+
+    // do
+    //{
+    //     who_starts();
+    // } while (player1 && player2 == 0);
+
+    // do
+    // {
+    //    point_system(serve);
+    // } while (sensor_timer != 4);
+}
